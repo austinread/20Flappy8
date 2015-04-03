@@ -1,9 +1,10 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/ScrollingMovement.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/GameController.cs">
     <Files>
-      <File FileName="Assets/Scripts/FlappyFlappin.cs" Line="27" Column="1" />
-      <File FileName="Assets/Scripts/ScrollingMovement.cs" Line="46" Column="2" />
+      <File FileName="Assets/Scripts/ScrollingMovement.cs" Line="29" Column="2" />
+      <File FileName="Assets/Scripts/FlappyFlappin.cs" Line="9" Column="75" />
+      <File FileName="Assets/Scripts/GameController.cs" Line="7" Column="29" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

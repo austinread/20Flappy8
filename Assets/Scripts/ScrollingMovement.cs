@@ -1,31 +1,35 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+//Handles behavior of pipes and ground
 public class ScrollingMovement : MonoBehaviour {
 
-	public Vector2 speed = new Vector2();
+	private Vector2 speed = new Vector2();
 	public Vector2 direction = new Vector2();
 	private Vector2 movement;
+	private Vector2 startingPos;	//So it can return there when the game restarts
 
 	private GameObject background;
-	
-	SpriteRenderer backgroundSprite;
-	SpriteRenderer mySprite;
+	private GameObject controller;
+	private SpriteRenderer backgroundSprite;
+	private SpriteRenderer mySprite;
 
-	float myWidth;
-	float backgroundWidth;
-	float myX;
-	float myY;
-	float backgroundX;
+	private float myWidth;
+	private float backgroundWidth;
+	private float myX;
+	private float myY;
+	private float backgroundX;
 
 	void Start(){
+		startingPos = transform.position;
+
 		background = GameObject.Find("FlappyBackground");
 		backgroundSprite = background.gameObject.GetComponent<SpriteRenderer>();
 		mySprite = gameObject.GetComponent<SpriteRenderer>();
+		controller = GameObject.FindGameObjectWithTag("GameController");
 	}
 
 	void Update () {
-		//Sets the movement to speed and direction
 		movement = new Vector2 (speed.x * direction.x, speed.y * direction.y);
 
 		myWidth = mySprite.sprite.bounds.size.x;
@@ -38,9 +42,33 @@ public class ScrollingMovement : MonoBehaviour {
 	void FixedUpdate(){
 		GetComponent<Rigidbody2D>().velocity = movement;
 
-		//Moves the object back to origin
+		//Moves ground back to origin, destroys pipes
 		if (myX < (backgroundX - myWidth)){
-			gameObject.transform.position = new Vector2(backgroundWidth, myY);
+			if (gameObject.tag == "Ground"){
+				gameObject.transform.position = new Vector2(backgroundWidth, myY);
+			}
+			else if (gameObject.tag == "Pipe"){
+				Destroy(gameObject);
+			}
+			else{
+				Debug.Log("You put this script on something besides a pipe or ground: " + gameObject.name +  ".  Get your shit together");
+			}
 		}
+	}
+
+	void OnTriggerEnter2D(Collider2D coll){
+		if (coll.gameObject.tag == "Bird"){
+			controller.gameObject.GetComponent<GameController>().LoseGame();
+		}
+	}
+
+	public Vector2 Speed{
+		get{return speed;}
+		set{speed = value;}
+	}
+
+	public Vector2 StartingPos{
+		get{return startingPos;}
+		set{startingPos = value;}
 	}
 }
