@@ -11,6 +11,7 @@ public class GameController : MonoBehaviour {
 	public float pipeInterval;	//How often they appear
 	public float pipeSpacing;	//Space in between the top and bottom pipes
 	public GameObject pipePrefab;
+	public GameObject scoreTriggerPrefab;
 	public Sprite pipeSpriteUp;
 	public Sprite pipeSpriteDown;
 
@@ -18,6 +19,7 @@ public class GameController : MonoBehaviour {
 
 	private GameObject[] ground;
 	private GameObject[] pipes;
+	private GameObject[] scoreTriggers;
 	private GameObject[] tiles;
 
 	//This is already tracked in each tile object, but working with this list for movememnt calculations minimizes finding and calling the right Tile every time
@@ -112,6 +114,11 @@ public class GameController : MonoBehaviour {
 			Destroy(pipe);
 		}
 
+		scoreTriggers = GameObject.FindGameObjectsWithTag("ScoreTrigger");
+		foreach (GameObject trigger in scoreTriggers){
+			Destroy(trigger);
+		}
+
 		for (int i = 0; i < 16; i++){
 			tileValues[i] = 0;
 			GetTileByPosition(i).NumValue = tileValues[i];
@@ -130,9 +137,11 @@ public class GameController : MonoBehaviour {
 			float randomOffset = Random.Range(-3.0f, 3.0f);
 			Vector2 newPipeLocation = new Vector2(8, -10 + randomOffset);	//BEWARE, HERE BE HARDCODED (X, Y) VALUES BY A LAZY ASS DEVELOPER
 			GameObject newPipeDown = (GameObject)Instantiate(pipePrefab, newPipeLocation, Quaternion.identity);
+			GameObject newScoreTrigger = (GameObject)Instantiate(scoreTriggerPrefab, new Vector2(newPipeLocation.x, newPipeLocation.y + pipeSpacing/2), Quaternion.identity);
 			GameObject newPipeUp = (GameObject)Instantiate(pipePrefab, new Vector2(newPipeLocation.x, newPipeLocation.y + pipeSpacing), Quaternion.identity);
 			newPipeDown.GetComponent<ScrollingMovement>().Speed = gameSpeed;
 			newPipeDown.GetComponent<SpriteRenderer>().sprite = pipeSpriteDown;
+			newScoreTrigger.GetComponent<ScrollingMovement>().Speed = gameSpeed;
 			newPipeUp.GetComponent<ScrollingMovement>().Speed = gameSpeed;
 			newPipeUp.GetComponent<SpriteRenderer>().sprite = pipeSpriteUp;
 		}
@@ -140,7 +149,7 @@ public class GameController : MonoBehaviour {
 
 	//Moves the tiles according to input
 	private void ShiftTiles(string direction){
-		bool moved = false;	//have any blocks moved this turn, or is the player just hitting buttons like a dumbass?
+		bool moved = false;	//Ensures that new blocks aren't added unless some have moved
 		int[] workingRowValues;
 		int modifier;	//determines which direction to check for empty squares
 
@@ -238,8 +247,14 @@ public class GameController : MonoBehaviour {
 		Debug.Log("Invalid tile requested: " + pos + ".  Idiot.");
 		return null;
 	}
+	
+	public int ScoreFlappy{
+		get{return scoreFlappy;}
+		set{scoreFlappy = value;}
+	}
 
 	void OnGUI(){
+		scoreTotal = score2048 * scoreFlappy;
 		GUI.Box(new Rect(10, 10, 150, 20), score2048 + " * " + scoreFlappy + " = " + scoreTotal);
 	}
 }
