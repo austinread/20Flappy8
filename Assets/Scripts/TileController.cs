@@ -19,10 +19,6 @@ public class TileController : MonoBehaviour {
 
 	private int numValue;
 	private SpriteRenderer mySprite;
-	
-	void Start () {
-		mySprite = GetComponent<SpriteRenderer>();
-	}
 
 	public int Position{
 		get{return position;}
@@ -33,6 +29,7 @@ public class TileController : MonoBehaviour {
 		get{return numValue;}
 		set{
 			numValue = value;
+			mySprite = GetComponent<SpriteRenderer>();
 			switch(numValue){
 			case 0:
 				mySprite.sprite = sprite0;

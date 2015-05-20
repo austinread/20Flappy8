@@ -51,8 +51,8 @@ public class GameController : MonoBehaviour {
 			tileValues.Add(0);
 		}
 
-		GenerateRandomBlock();
-		GenerateRandomBlock();
+		GenerateRandomBlock(-1);
+		GenerateRandomBlock(-1);
 	}
 
 	void Update(){
@@ -124,8 +124,8 @@ public class GameController : MonoBehaviour {
 			GetTileByPosition(i).NumValue = tileValues[i];
 		}
 
-		GenerateRandomBlock();
-		GenerateRandomBlock();
+		GenerateRandomBlock(-1);
+		GenerateRandomBlock(-1);
 	}
 
 	//At globally defined interval, spawns a new set of pipes at a slightly random location
@@ -152,6 +152,11 @@ public class GameController : MonoBehaviour {
 		bool moved = false;	//Ensures that new blocks aren't added unless some have moved
 		int[] workingRowValues;
 		int modifier;	//determines which direction to check for empty squares
+
+		List<bool> mergings = new List<bool>();	//List exists to prevent multiple mergings in a single move
+		for (int i=0; i < 16; i++){
+			mergings.Add(false);
+		}
 
 		//first, establish values depending on which direction we're going
 		switch (direction){
@@ -182,23 +187,34 @@ public class GameController : MonoBehaviour {
 		for (int workingRow = 1; workingRow <= 3; workingRow++){
 			for (int block = 0; block < workingRowValues.Length; block++){
 				if (tileValues[workingRowValues[block]] != 0){
-					for (int rowToCheck = workingRow; rowToCheck >= 1; rowToCheck--){
+					int target = -1;
+					bool merge = false;
+					for (int rowToCheck = 1; rowToCheck <= workingRow; rowToCheck++){
 						int next = workingRowValues[block] + (modifier * rowToCheck);
 						if (tileValues[next] == 0){
-							tileValues[next] = tileValues[workingRowValues[block]];
-							tileValues[workingRowValues[block]] = 0;
-							moved = true;
-							break;
+							target = next;
+						}
+						else if (tileValues[next] == tileValues[workingRowValues[block]] && mergings[next] == false){
+							target = next;
+							merge = true;
 						}
 						else{
-							if (tileValues[next] == tileValues[workingRowValues[block]]){
-								int mergedValue = tileValues[workingRowValues[block]] * 2;
-								tileValues[next] = mergedValue;
-								tileValues[workingRowValues[block]] = 0;
-								moved = true;
-								score2048 += mergedValue;
-								break;
-							}
+							break;
+						}
+					}
+					if (target != -1){
+						if (!merge){
+							tileValues[target] = tileValues[workingRowValues[block]];
+							tileValues[workingRowValues[block]] = 0;
+							moved = true;
+						}
+						else{
+							int mergedValue = tileValues[workingRowValues[block]] * 2;
+							tileValues[target] = mergedValue;
+							mergings[target] = true;	//Prevents double mergings in a single turn
+							tileValues[workingRowValues[block]] = 0;
+							moved = true;
+							score2048 += mergedValue;
 						}
 					}
 				}
@@ -215,19 +231,24 @@ public class GameController : MonoBehaviour {
 		}
 
 		if (moved)
-			GenerateRandomBlock();
+			GenerateRandomBlock(-1);
 	}
 	
-	//picks a random free space and adds a new block, at the start of the game at at the end of every move
-	private void GenerateRandomBlock(){
+	//picks a free space and adds a new block
+	//if parameter is -1, space is random, otherwise the space matches the parameter (for testing)
+	private void GenerateRandomBlock(int debug){
 		List<int> freeSpaces = new List<int>();
 		for (int i = 0; i < 16; i++){
 			if (tileValues[i] == 0){
 				freeSpaces.Add(i);
 			}
 		}
+		int space;
+		if (debug == -1)
+			space = Random.Range(0, freeSpaces.Count);
+		else
+			space = debug;
 
-		int space = Random.Range(0, freeSpaces.Count);
 		int newVal;
 		if (Random.Range(0.0f, 1.0f) < .9)
 			newVal = 2;
