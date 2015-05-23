@@ -84,6 +84,10 @@ public class GameController : MonoBehaviour {
 
 	//Sets things in motion
 	public void StartGame(){
+		score2048 = 0;
+		scoreFlappy = 0;
+		scoreTotal = 0;
+
 		paused = false;
 		bird.GetComponent<Rigidbody2D>().gravityScale = birdGravity;
 
@@ -94,10 +98,6 @@ public class GameController : MonoBehaviour {
 
 	//Resets game and pauses, awaiting button press
 	public void LoseGame(){
-		score2048 = 0;
-		scoreFlappy = 0;
-		scoreTotal = 0;
-
 		paused = true;
 		timer = pipeInterval;
 		bird.GetComponent<Rigidbody2D>().gravityScale = 0.0f;
@@ -134,7 +134,7 @@ public class GameController : MonoBehaviour {
 		if (timer <= 0){
 			timer = pipeInterval;
 
-			float randomOffset = Random.Range(-3.0f, 3.0f);
+			float randomOffset = Random.Range(-2.75f, 2.75f);
 			Vector2 newPipeLocation = new Vector2(8, -10 + randomOffset);	//BEWARE, HERE BE HARDCODED (X, Y) VALUES BY A LAZY ASS DEVELOPER
 			GameObject newPipeDown = (GameObject)Instantiate(pipePrefab, newPipeLocation, Quaternion.identity);
 			GameObject newScoreTrigger = (GameObject)Instantiate(scoreTriggerPrefab, new Vector2(newPipeLocation.x, newPipeLocation.y + pipeSpacing/2), Quaternion.identity);
@@ -225,17 +225,21 @@ public class GameController : MonoBehaviour {
 			}
 		}
 
-		//finally, update tile object values, then generate a random new block
+		//finally, update tile object values, generate a random new block, and check for a game over
 		for (int i = 0; i < 16; i++){
 			GetTileByPosition(i).NumValue = tileValues[i];
 		}
 
 		if (moved)
 			GenerateRandomBlock(-1);
+
+		if (tileValues.IndexOf(0) == -1){
+			LoseGame();
+		}
 	}
 	
 	//picks a free space and adds a new block
-	//if parameter is -1, space is random, otherwise the space matches the parameter (for testing)
+	//if parameter is -1, space is random, otherwise the space matches the parameter (for testing purposes)
 	private void GenerateRandomBlock(int debug){
 		List<int> freeSpaces = new List<int>();
 		for (int i = 0; i < 16; i++){

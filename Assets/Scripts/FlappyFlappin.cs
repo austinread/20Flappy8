@@ -14,9 +14,8 @@ public class FlappyFlappin : MonoBehaviour {
 	}
 	
 	void FixedUpdate(){
-		float inputX = Input.GetAxis ("Horizontal");
-		float inputY = Input.GetAxis ("Vertical");
-		if (inputX != 0 || inputY != 0){
+		//Keyclicks More precise than axes when looking for a single click
+		if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)){
 			GetComponent<Rigidbody2D>().velocity = speed;
 		}
 	}

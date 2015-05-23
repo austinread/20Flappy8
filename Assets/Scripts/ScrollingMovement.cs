@@ -47,7 +47,7 @@ public class ScrollingMovement : MonoBehaviour {
 		//Moves ground back to origin, destroys pipes
 		if (myX < (backgroundX - myWidth)){
 			if (gameObject.tag == "Ground"){
-				gameObject.transform.position = new Vector2(backgroundWidth, myY);
+				gameObject.transform.position = new Vector3(backgroundWidth, myY, transform.position.z);
 			}
 			else if (gameObject.tag == "Pipe" || gameObject.tag == "ScoreTrigger"){
 				Destroy(gameObject);
