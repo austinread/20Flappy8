@@ -1,4 +1,10 @@
 20Flappy8
 =========
 
-Unity learning project.  2048 + Flappy Bird = God help me
+Unity learning project.  Play 2048 and Flappy bird simultaneously.
+
+Unity WebGL build: http://austinread.github.io/20Flappy8/
+WASD/Arrow Keys
+
+http://gabrielecirulli.github.io/2048/
+http://flappybird.io/
