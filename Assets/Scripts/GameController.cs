@@ -29,6 +29,11 @@ public class GameController : MonoBehaviour {
 	private int scoreFlappy;
 	private int score2048;
 	private int scoreTotal;
+	private int scoreLast;
+	private int scoreHigh;
+
+	//The LoseGame method was getting called multiple times, screwing the score up.  This is utilized to prevent that.
+	private bool collisionBuffer;
 
 	GameObject bird;
 
@@ -36,6 +41,8 @@ public class GameController : MonoBehaviour {
 		scoreFlappy = 0;
 		score2048 = 0;
 		scoreTotal = 0;
+		scoreLast = 0;
+		scoreHigh = 0;
 		paused = true;
 		timer = pipeInterval;
 		bird = GameObject.FindGameObjectWithTag("Bird");
@@ -84,10 +91,7 @@ public class GameController : MonoBehaviour {
 
 	//Sets things in motion
 	public void StartGame(){
-		score2048 = 0;
-		scoreFlappy = 0;
-		scoreTotal = 0;
-
+		collisionBuffer = false;
 		paused = false;
 		bird.GetComponent<Rigidbody2D>().gravityScale = birdGravity;
 
@@ -98,6 +102,15 @@ public class GameController : MonoBehaviour {
 
 	//Resets game and pauses, awaiting button press
 	public void LoseGame(){
+		collisionBuffer = true;
+		scoreLast = scoreTotal;
+		if (scoreTotal > scoreHigh){
+			scoreHigh = scoreTotal;
+		}
+		score2048 = 0;
+		scoreFlappy = 0;
+		scoreTotal = 0;
+
 		paused = true;
 		timer = pipeInterval;
 		bird.GetComponent<Rigidbody2D>().gravityScale = 0.0f;
@@ -233,7 +246,7 @@ public class GameController : MonoBehaviour {
 		if (moved)
 			GenerateRandomBlock(-1);
 
-		if (tileValues.IndexOf(0) == -1){
+		if (tileValues.IndexOf(0) == -1 && collisionBuffer == false){
 			LoseGame();
 		}
 	}
@@ -278,8 +291,16 @@ public class GameController : MonoBehaviour {
 		set{scoreFlappy = value;}
 	}
 
+	public bool CollisionBuffer{
+		get{return collisionBuffer;}
+		set {collisionBuffer = value;}
+	}
+
 	void OnGUI(){
 		scoreTotal = score2048 * scoreFlappy;
-		GUI.Box(new Rect(10, 10, 150, 20), score2048 + " * " + scoreFlappy + " = " + scoreTotal);
+		GUI.Box(new Rect(10, 10, 150, 60), score2048 + " * " + scoreFlappy + " = " + scoreTotal + "\n" +
+		        "Last Game: " + scoreLast + "\n" +
+		        "High Score " + scoreHigh);
+
 	}
 }

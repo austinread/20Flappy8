@@ -13,7 +13,7 @@ public class FlappyFlappin : MonoBehaviour {
 		startingPos = transform.position;
 	}
 	
-	void FixedUpdate(){
+	void Update(){
 		//Keyclicks More precise than axes when looking for a single click
 		if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)){
 			GetComponent<Rigidbody2D>().velocity = speed;

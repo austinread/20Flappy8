@@ -59,7 +59,7 @@ public class ScrollingMovement : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D coll){
-		if (coll.gameObject.tag == "Bird" && gameObject.tag != "ScoreTrigger"){
+		if (coll.gameObject.tag == "Bird" && gameObject.tag != "ScoreTrigger" && controller.gameObject.GetComponent<GameController>().CollisionBuffer == false){
 			controller.gameObject.GetComponent<GameController>().LoseGame();
 		}
 	}
